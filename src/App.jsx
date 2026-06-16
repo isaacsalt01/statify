@@ -39,8 +39,9 @@ ChartJS.register(
 )
 
 function AppContent() {
-  const { accessToken, setAccessToken } = useStore()
+  const { accessToken, setAccessToken, isDemoMode } = useStore()
   const [ isInitialized, setIsInitialized ] = useState(false)
+  const hasActiveSession = accessToken || isDemoMode
   
   useSpotifyData()
 
@@ -85,7 +86,7 @@ function AppContent() {
           <Route 
             path="/" 
             element={
-              accessToken ? (
+              hasActiveSession ? (
                 <MainPage />
               ) : (
                 <LoginPage />
@@ -97,13 +98,13 @@ function AppContent() {
           <Route 
             path="/about" 
             element={
-              accessToken ? <AboutPage /> : <Navigate to="/" replace />
+              hasActiveSession ? <AboutPage /> : <Navigate to="/" replace />
             } 
           />
           <Route 
             path="/audio-features" 
             element={
-              accessToken ? <AudioFeaturesPage /> : <Navigate to="/" replace />
+              hasActiveSession ? <AudioFeaturesPage /> : <Navigate to="/" replace />
             } 
           />
           

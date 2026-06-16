@@ -1,9 +1,11 @@
 import { create } from 'zustand'
+import { demoData } from '../data/demoData'
 
 export const useStore = create((set, get) => ({
   // User state
   user: null,
   accessToken: null,
+  isDemoMode: false,
   
   // Music data state
   shortTerm: null,
@@ -22,9 +24,23 @@ export const useStore = create((set, get) => ({
   embedTrackID: null,
   
   // Actions
-  setAccessToken: (token) => set({ accessToken: token }),
+  setAccessToken: (token) => set({ accessToken: token, isDemoMode: false }),
   
   setUser: (userData) => set({ user: userData }),
+
+  loadDemoData: () => set({
+    accessToken: null,
+    isDemoMode: true,
+    user: demoData.user,
+    shortTerm: demoData.shortTerm,
+    mediumTerm: demoData.mediumTerm,
+    longTerm: demoData.longTerm,
+    currentDataSet: 'mediumTerm',
+    playStatus: 'STOPPED',
+    previewURL: null,
+    previewUrlCache: new Map(),
+    embedTrackID: demoData.mediumTerm.topTracks[0]?.trackId || null
+  }),
   
   setMusicData: (timeRange, data) => {
     const state = get()
@@ -79,11 +95,15 @@ export const useStore = create((set, get) => ({
   
   logout: () => set({ 
     accessToken: null, 
+    isDemoMode: false,
     user: null, 
     shortTerm: null, 
     mediumTerm: null, 
     longTerm: null,
-    previewUrlCache: new Map() // Clear cache on logout
+    playStatus: 'STOPPED',
+    previewURL: null,
+    previewUrlCache: new Map(), // Clear cache on logout
+    embedTrackID: null
   }),
 
   setEmbedTrackID: (newTrackID) => {

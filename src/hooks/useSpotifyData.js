@@ -10,7 +10,8 @@ export const useSpotifyData = () => {
     mediumTerm, 
     longTerm,
     embedTrackID,
-    setEmbedTrackID
+    setEmbedTrackID,
+    isDemoMode
   } = useStore()
 
   const fetchUserData = async (token) => {
@@ -140,7 +141,7 @@ export const useSpotifyData = () => {
       }
       
       setMusicData(timeRange, musicData)
-      setEmbedTrackID(topTracks[0].trackId)
+      setEmbedTrackID(topTracks[0]?.trackId || null)
       console.log(`${timeRange}: Data fetch complete`)
     } catch (error) {
       console.error(`Error in fetchDataForTimeRange for ${timeRange}:`, error)
@@ -149,7 +150,9 @@ export const useSpotifyData = () => {
 
   useEffect(() => {
     // Only fetch data if we have a valid access token
-    if (accessToken && accessToken.trim() !== '') {
+    if (isDemoMode) {
+      console.log('Demo mode active, skipping Spotify data fetch')
+    } else if (accessToken && accessToken.trim() !== '') {
       console.log('Access token available, fetching data...')
       // Fetch data for all time ranges
       fetchDataForTimeRange(accessToken, 'short_term')
@@ -159,7 +162,7 @@ export const useSpotifyData = () => {
     } else {
       console.log('No access token available, skipping data fetch')
     }
-  }, [accessToken])
+  }, [accessToken, isDemoMode])
 
   return {
     fetchDataForTimeRange,

@@ -5,7 +5,7 @@ import SpotifyWebApi from "spotify-web-api-node";
 import { useStore } from '../store/useStore';
 
 const Album = ({ trackInfo, onClickHandler, accessToken }) => {
-  const { getCachedPreviewUrl, cachePreviewUrl } = useStore();
+  const { getCachedPreviewUrl, cachePreviewUrl, isDemoMode } = useStore();
   const { getEmbedTrackID, setEmbedTrackID } = useStore()
 
   
@@ -14,7 +14,7 @@ const Album = ({ trackInfo, onClickHandler, accessToken }) => {
       NOT MY CODE
       FROM REPO - https://github.com/AliAkhtari78/SpotifyScraper  
     */
-    const scraper = process.env.VITE_SCRAPER_URL || "http://localhost:9000/.netlify/functions/api/scrape"
+    const scraper = import.meta.env.VITE_SCRAPER_URL || "http://127.0.0.1:9000/.netlify/functions/api/scrape"
     try {
       const response = await axios.get(scraper, {
         headers: {
@@ -90,6 +90,15 @@ const Album = ({ trackInfo, onClickHandler, accessToken }) => {
 
   const handlePreviewClick = async () => {
     try {
+      if (isDemoMode) {
+        if (trackInfo.previewURL) {
+          onClickHandler(trackInfo.previewURL);
+        } else {
+          console.log(`No preview URL available for demo track: ${trackInfo.trackName}`);
+        }
+        return;
+      }
+
       // Check if we have a cached URL first
       const cachedUrl = getCachedPreviewUrl(trackInfo.trackId);
       
@@ -135,13 +144,15 @@ const Album = ({ trackInfo, onClickHandler, accessToken }) => {
         <div className="img-preview-button">
           <img className="card-img-top" src={trackInfo.image} alt={`${trackInfo.trackName} album cover`} />
           <div className="preview-button">
-            <span
-              className="btn-success albumButton"
-              style={{ padding: "10px" }}
-              onClick={handlePreviewClick}
-            >
-              Preview
-            </span>
+            {(!isDemoMode || trackInfo.previewURL) && (
+              <span
+                className="btn-success albumButton"
+                style={{ padding: "10px" }}
+                onClick={handlePreviewClick}
+              >
+                Preview
+              </span>
+            )}
             <span
               className="btn-success albumButton"
               style={{ padding: "10px" }}

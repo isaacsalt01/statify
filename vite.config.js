@@ -11,6 +11,7 @@ export default defineConfig({
     'process.env.VITE_SCRAPER_URL': JSON.stringify(process.env.VITE_SCRAPER_URL),
   },
   server: {
+    host: '127.0.0.1',
     port: 3000,
     open: true
   },
